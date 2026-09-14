@@ -1,6 +1,5 @@
 """CweForest is a graph-based representation of the CWE hierarchy."""
 
-import json
 from typing import Any, Dict, List, Optional, Set, override
 
 from cpg2py import AbcGraphQuerier, Storage
@@ -67,30 +66,20 @@ class CweForest(AbcGraphQuerier[CweNode, CweEdge]):
         """
         return f"CWE-{cwe_id}" if not cwe_id.startswith("CWE-") else cwe_id
 
-    def _add_node(self, cwe_id: str, name: str, abstract: str, layer: str) -> None:
+    def _add_node(self, cwe_id: str, props: Dict[str, Any]) -> None:
         """Add a CWE node to the forest storage.
 
         Args:
             cwe_id: The CWE identifier.
-            name: The weakness name.
-            abstract: The abstraction type (Class, Base, Variant).
-            layer: Layer information as JSON string or dict.
+            props: Node properties (name, abstract, description, layer, etc.),
+                as loaded from `nodes.csv`.
         """
         cwe_id = self._normalize_cwe(cwe_id)
 
         if not self.storage.contains_node(cwe_id):
             self.storage.add_node(cwe_id)
 
-        layer_val: Any = layer
-        if isinstance(layer, dict):
-            layer_val = json.dumps(layer)
-
-        props: Dict[str, Any] = {
-            "name": name,
-            "abstract": abstract,
-            "layer": layer_val,
-        }
-        self.storage.set_node_props(cwe_id, props)
+        self.storage.set_node_props(cwe_id, dict(props))
 
     def _add_edge(self, parent_id: str, child_id: str) -> None:
         """Establish a parent-child relationship between two CWE nodes.

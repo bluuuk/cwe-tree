@@ -39,6 +39,7 @@ dev = [
     "black>=24.0.0",
     "isort>=5.13.0",
     "mypy>=1.8.0",
+    "pytest>=8.0.0",
 ]
 
 # Code Quality Tools Configuration
